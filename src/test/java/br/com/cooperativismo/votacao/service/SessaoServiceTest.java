@@ -3,6 +3,7 @@ package br.com.cooperativismo.votacao.service;
 import br.com.cooperativismo.votacao.domain.model.Pauta;
 import br.com.cooperativismo.votacao.domain.model.SessaoVotacao;
 import br.com.cooperativismo.votacao.exception.RecursoNaoEncontradoException;
+import br.com.cooperativismo.votacao.exception.SessaoJaExisteException;
 import br.com.cooperativismo.votacao.repository.PautaRepository;
 import br.com.cooperativismo.votacao.repository.SessaoVotacaoRepository;
 import org.junit.jupiter.api.Test;
@@ -78,6 +79,21 @@ class SessaoServiceTest {
         when(pautaRepository.findById(pautaId)).thenReturn(Optional.empty());
 
         assertThrows(RecursoNaoEncontradoException.class, () -> sessaoService.abrir(pautaId, 5));
+        verify(sessaoRepository, never()).save(any(SessaoVotacao.class));
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoSessaoJaExisteParaPauta() {
+        UUID pautaId = UUID.randomUUID();
+        Pauta pauta = new Pauta("Titulo Teste", "Descricao Teste");
+        pauta.setId(pautaId);
+
+        when(pautaRepository.findById(pautaId)).thenReturn(Optional.of(pauta));
+        when(sessaoRepository.existsByPautaId(pautaId)).thenReturn(true);
+
+        assertThrows(SessaoJaExisteException.class,
+                () -> sessaoService.abrir(pautaId, 5));
+
         verify(sessaoRepository, never()).save(any(SessaoVotacao.class));
     }
 }

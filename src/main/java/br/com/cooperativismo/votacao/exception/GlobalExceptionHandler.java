@@ -15,6 +15,12 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(SessaoJaExisteException.class)
+    public ResponseEntity<String> handleSessaoJaExiste(SessaoJaExisteException ex) {
+        log.warn("Sessão já existe: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<String> handleNotFound(RecursoNaoEncontradoException ex) {
         log.warn("Recurso não encontrado: {}", ex.getMessage());

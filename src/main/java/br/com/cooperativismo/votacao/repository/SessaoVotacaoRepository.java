@@ -13,6 +13,8 @@ import java.util.UUID;
 @Repository
 public interface SessaoVotacaoRepository extends JpaRepository<SessaoVotacao, UUID> {
 
+    Boolean existsByPautaId(UUID pautaId);
+
     List<SessaoVotacao> findByStatusAndEncerrraEmBefore(StatusSessao status, LocalDateTime dataEncerramento);
 
     Optional<SessaoVotacao> findTopByPauta_Id(UUID pautaId);

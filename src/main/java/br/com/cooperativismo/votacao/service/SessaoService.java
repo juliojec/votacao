@@ -3,6 +3,7 @@ package br.com.cooperativismo.votacao.service;
 import br.com.cooperativismo.votacao.domain.model.Pauta;
 import br.com.cooperativismo.votacao.domain.model.SessaoVotacao;
 import br.com.cooperativismo.votacao.exception.RecursoNaoEncontradoException;
+import br.com.cooperativismo.votacao.exception.SessaoJaExisteException;
 import br.com.cooperativismo.votacao.repository.PautaRepository;
 import br.com.cooperativismo.votacao.repository.SessaoVotacaoRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,10 @@ public class SessaoService {
     public SessaoVotacao abrir(UUID pautaId, int duracaoMinutos) {
         Pauta pauta = pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Pauta", pautaId));
+
+        if (sessaoRepository.existsByPautaId(pautaId)) {
+            throw new SessaoJaExisteException(pautaId);
+        }
 
         int duracao = duracaoMinutos > 0 ? duracaoMinutos : DURACAO_PADRAO_MINUTOS;
 
