@@ -5,6 +5,7 @@ import br.com.cooperativismo.votacao.controller.dto.PautaResponse;
 import br.com.cooperativismo.votacao.controller.dto.ResultadoVotacaoResponse;
 import br.com.cooperativismo.votacao.domain.model.Pauta;
 import br.com.cooperativismo.votacao.domain.model.ResultadoVotacao;
+import br.com.cooperativismo.votacao.domain.model.StatusSessao;
 import br.com.cooperativismo.votacao.mapper.PautaMapper;
 import br.com.cooperativismo.votacao.service.PautaService;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,7 @@ class PautaControllerTest {
         resultadoVotacao = new ResultadoVotacao(
                 pauta,
                 pautaId,
+                StatusSessao.ABERTA,
                 10L,
                 5L,
                 "APROVADA");

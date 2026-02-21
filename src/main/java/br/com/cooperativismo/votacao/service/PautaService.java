@@ -9,6 +9,7 @@ import br.com.cooperativismo.votacao.repository.VotoRepository;
 import br.com.cooperativismo.votacao.domain.model.ResultadoVotacao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,7 @@ public class PautaService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Pauta", id));
     }
 
+    @Cacheable(value = "resultados", key = "#pautaId", condition = "#result != null && #result.encerrada()")
     @Transactional(readOnly = true)
     public ResultadoVotacao buscarResultado(UUID pautaId) {
         Pauta pauta = buscarPorId(pautaId);
@@ -55,6 +57,6 @@ public class PautaService {
         long nao = votoRepository.countBySessaoIdAndOpcao(sessao.getId(), OpcaoVoto.NAO);
         String resultado = sim > nao ? "APROVADA" : nao > sim ? "REPROVADA" : "EMPATE";
 
-        return new ResultadoVotacao(pauta, sessao.getId(), sim, nao, resultado);
+        return new ResultadoVotacao(pauta, sessao.getId(), sessao.getStatus(), sim, nao, resultado);
     }
 }

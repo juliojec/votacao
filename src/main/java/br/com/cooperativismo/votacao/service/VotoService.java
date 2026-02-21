@@ -1,9 +1,6 @@
 package br.com.cooperativismo.votacao.service;
 
-import br.com.cooperativismo.votacao.domain.model.OpcaoVoto;
-import br.com.cooperativismo.votacao.domain.model.SessaoVotacao;
-import br.com.cooperativismo.votacao.domain.model.StatusSessao;
-import br.com.cooperativismo.votacao.domain.model.Voto;
+import br.com.cooperativismo.votacao.domain.model.*;
 import br.com.cooperativismo.votacao.exception.AssociadoJaVotouException;
 import br.com.cooperativismo.votacao.exception.RecursoNaoEncontradoException;
 import br.com.cooperativismo.votacao.messaging.VotacaoEventPublisher;
@@ -12,6 +9,8 @@ import br.com.cooperativismo.votacao.repository.SessaoVotacaoRepository;
 import br.com.cooperativismo.votacao.repository.VotoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,7 @@ public class VotoService {
     private final SessaoVotacaoRepository sessaoRepository;
     private final CpfValidacaoService cpfValidacaoService;
     private final VotacaoEventPublisher eventPublisher;
+    private final CacheManager cacheManager;
 
     private static final String SESSAO_NAO_ENCONTRADA = "Sessão de votação";
     private static final String RESULTADO_APROVADA = "APROVADA";
@@ -80,6 +80,14 @@ public class VotoService {
             String resultado = sim > nao ? RESULTADO_APROVADA
                     : nao > sim ? RESULTADO_REPROVADA
                     : RESULTADO_EMPATE;
+
+            Pauta pauta = sessao.getPauta();
+            ResultadoVotacao resultadoVotacao = new ResultadoVotacao(pauta, sessao.getId(), sessao.getStatus(), sim, nao, resultado);
+            Cache cache = cacheManager.getCache("resultados");
+            if (cache != null) {
+                cache.put(pauta.getId(), resultadoVotacao);
+                log.info("Resultado da pauta {} cacheado", pauta.getId());
+            }
 
             eventPublisher.publicarResultado(new VotacaoResultadoEvent(
                     sessao.getId(),

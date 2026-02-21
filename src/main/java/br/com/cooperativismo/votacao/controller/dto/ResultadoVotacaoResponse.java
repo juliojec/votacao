@@ -1,6 +1,7 @@
 package br.com.cooperativismo.votacao.controller.dto;
 
 import br.com.cooperativismo.votacao.domain.model.ResultadoVotacao;
+import br.com.cooperativismo.votacao.domain.model.StatusSessao;
 
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ public record ResultadoVotacaoResponse(
         UUID pautaId,
         String pautaTitulo,
         UUID sessaoId,
+        String statusSessao,
         long votosSim,
         long votosNao,
         long totalVotos,
@@ -18,6 +20,7 @@ public record ResultadoVotacaoResponse(
             resultado.pauta().getId(),
             resultado.pauta().getTitulo(),
             resultado.sessaoId(),
+            resultado.statusSessao().name(),
             resultado.votosSim(),
             resultado.votosNao(),
             resultado.votosSim() + resultado.votosNao(),

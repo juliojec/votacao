@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +35,9 @@ class VotoServiceTest {
 
     @Mock
     private CpfValidacaoService cpfValidacaoService;
+
+    @Mock
+    private CacheManager cacheManager;
 
     @Mock
     private VotacaoEventPublisher eventPublisher;
