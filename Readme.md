@@ -19,6 +19,7 @@ Publicação do resultado final em fila (RabbitMQ)
 * PostgreSQL 16
 * RabbitMQ 3.13
 * Flyway
+* Cache - Caffeine
 * Docker & Docker Compose
 
 ## Pré-requisitos
